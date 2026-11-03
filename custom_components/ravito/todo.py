@@ -26,7 +26,8 @@ _QUANTITY_RE = re.compile(r"^(\d+(?:[.,]\d+)?)\s*(?:x\s+)?(.+)$", re.I)
 def _quantity_label(line: dict) -> str:
     quantity = line.get("quantity") or 1
     text = f"{quantity:g}" if isinstance(quantity, (int, float)) else str(quantity)
-    if line.get("unit"):
+    # « pièce » n'apporte rien : « Cordon Bleu (×2) » plutôt que « (2 pièce) »
+    if line.get("unit") and line["unit"].lower() not in ("pièce", "pièces"):
         return f"{text} {line['unit']}"
     return "" if quantity == 1 else f"×{text}"
 
