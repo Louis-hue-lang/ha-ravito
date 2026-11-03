@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Ravito",
-        "description": "Adresse de Ravito et jeton d'API, créé dans Ravito : Réglages › Administration › Home Assistant. Portée « liste » pour ajouter et cocher, « cuisine » pour parler à Chef.",
+        "description": "Adresse de Ravito et jeton d'API, créé dans Ravito : Réglages › Administration › Home Assistant. Portée « cuisine » pour modifier le menu de la semaine.",
         "data": {
           "url": "Adresse de Ravito",
           "token": "Jeton d'API"
@@ -28,24 +28,22 @@
   },
   "entity": {
     "sensor": {
-      "a_acheter": { "name": "À acheter" },
-      "stock_bas": { "name": "Stock bas" },
-      "peremptions": { "name": "Péremptions" },
-      "menu_du_jour": { "name": "Menu du jour" }
+      "a_acheter": {
+        "name": "À acheter"
+      },
+      "stock_bas": {
+        "name": "Stock bas"
+      },
+      "peremptions": {
+        "name": "Péremptions"
+      },
+      "menu_du_jour": {
+        "name": "Menu du jour"
+      }
     },
     "todo": {
-      "liste_de_courses": { "name": "Liste de courses" }
-    }
-  },
-  "services": {
-    "chef": {
-      "name": "Parler à Chef",
-      "description": "Envoie une phrase à Chef, le cuisinier de Ravito, et renvoie sa réponse à lire (speech). « oui » / « non » répond à ses propositions.",
-      "fields": {
-        "texte": {
-          "name": "Texte",
-          "description": "Ce qui est dit à Chef."
-        }
+      "liste_de_courses": {
+        "name": "Liste de courses"
       }
     }
   }

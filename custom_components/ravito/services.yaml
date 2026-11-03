@@ -1,7 +1,0 @@
-chef:
-  fields:
-    texte:
-      required: true
-      example: "qu'est-ce que je cuisine ce soir ?"
-      selector:
-        text:

@@ -6,8 +6,6 @@ from typing import Any
 import aiohttp
 
 TIMEOUT = aiohttp.ClientTimeout(total=20)
-# Chef met quelques secondes à répondre
-CHEF_TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 
 class RavitoError(Exception):
@@ -25,19 +23,17 @@ class RavitoScopeError(RavitoError):
 class RavitoApi:
     def __init__(self, session: aiohttp.ClientSession, url: str, token: str) -> None:
         self._session = session
-        self._url = url.rstrip("/")
+        self.url = url.rstrip("/")
         self._token = token
 
-    async def _request(
-        self, method: str, path: str, payload: dict | None = None, timeout=TIMEOUT
-    ) -> Any:
+    async def _request(self, method: str, path: str, payload: dict | None = None) -> Any:
         try:
             async with self._session.request(
                 method,
-                f"{self._url}/api/ha{path}",
+                f"{self.url}/api/ha{path}",
                 json=payload,
                 headers={"Authorization": f"Bearer {self._token}"},
-                timeout=timeout,
+                timeout=TIMEOUT,
             ) as resp:
                 if resp.status == 401:
                     raise RavitoAuthError("Jeton refusé")
@@ -56,11 +52,22 @@ class RavitoApi:
     async def async_summary(self) -> dict[str, Any]:
         return await self._request("GET", "/summary")
 
-    async def async_add_item(self, name: str, quantity: float = 1) -> dict[str, Any]:
-        return await self._request("POST", "/shopping-list", {"name": name, "quantity": quantity})
+    async def async_recipes(self) -> list[dict[str, Any]]:
+        return await self._request("GET", "/recipes")
 
-    async def async_set_checked(self, item_id: int, checked: bool) -> dict[str, Any]:
-        return await self._request("PATCH", f"/shopping-list/{item_id}", {"checked": checked})
+    async def async_recipe(self, recipe_id: int) -> dict[str, Any]:
+        return await self._request("GET", f"/recipes/{recipe_id}")
 
-    async def async_chef(self, text: str) -> dict[str, Any]:
-        return await self._request("POST", "/chef", {"text": text}, timeout=CHEF_TIMEOUT)
+    async def async_menu(self) -> dict[str, Any]:
+        return await self._request("GET", "/menu")
+
+    async def async_add_to_menu(
+        self, recipe_id: int, day: str | None, servings: int | None = None
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"recipe_id": recipe_id, "day": day}
+        if servings:
+            payload["servings"] = servings
+        return await self._request("POST", "/menu", payload)
+
+    async def async_remove_from_menu(self, entry_id: int) -> dict[str, Any]:
+        return await self._request("DELETE", f"/menu/{entry_id}")
