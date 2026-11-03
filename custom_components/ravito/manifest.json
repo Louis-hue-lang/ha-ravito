@@ -1,0 +1,11 @@
+{
+  "domain": "ravito",
+  "name": "Ravito",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/Louis-hue-lang/ha-ravito",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}

@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ravito",
+        "description": "Ravito address and API token, created in Ravito: Settings › Administration › Home Assistant. Scope « liste » to add and check items, « cuisine » to talk to Chef.",
+        "data": {
+          "url": "Ravito address",
+          "token": "API token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "New Ravito token",
+        "description": "The token was rejected (revoked?). Create a new one in Ravito: Settings › Administration › Home Assistant.",
+        "data": {
+          "token": "API token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Token rejected.",
+      "cannot_connect": "Cannot reach Ravito."
+    },
+    "abort": {
+      "already_configured": "This Ravito is already configured.",
+      "reauth_successful": "Token updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "a_acheter": {
+        "name": "To buy"
+      },
+      "stock_bas": {
+        "name": "Low stock"
+      },
+      "peremptions": {
+        "name": "Expiring"
+      },
+      "menu_du_jour": {
+        "name": "Today's menu"
+      }
+    },
+    "todo": {
+      "liste_de_courses": {
+        "name": "Shopping list"
+      }
+    }
+  },
+  "services": {
+    "chef": {
+      "name": "Talk to Chef",
+      "description": "Sends a sentence to Chef, Ravito's cook, and returns the reply to read out (speech). « oui » / « non » answers its proposals.",
+      "fields": {
+        "texte": {
+          "name": "Text",
+          "description": "What is said to Chef."
+        }
+      }
+    }
+  }
+}
