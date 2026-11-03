@@ -516,7 +516,16 @@ const STYLE = `
   .steps li { margin-bottom: 8px; }
 `;
 
-if (!customElements.get("ravito-card")) customElements.define("ravito-card", RavitoCard);
+// Home Assistant remplace customElements en démarrant. Une carte enregistrée avant ce
+// remplacement reste invisible ("Erreur de configuration") : fréquent sur un appareil lent.
+function registerCard() {
+  if (!customElements.get("home-assistant")) {
+    setTimeout(registerCard, 50);
+    return;
+  }
+  if (!customElements.get("ravito-card")) customElements.define("ravito-card", RavitoCard);
+}
+registerCard();
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "ravito-card",
