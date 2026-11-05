@@ -7,7 +7,8 @@
  * - Recettes : liste, filtres, fiche ; « Ajouter au menu ».
  *
  * Aucun gestionnaire de toucher ni défilement horizontal : le balayage entre
- * les vues du tableau de bord reste libre.
+ * les vues du tableau de bord reste libre. Kiosk Satellite ignore un balayage
+ * commencé sur un <button> : les grandes zones tactiles sont des <div role="button">.
  */
 const JOURS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -333,7 +334,7 @@ class RavitoCard extends HTMLElement {
       <section class="box ${isToday ? "today" : ""} ${past ? "past" : ""}">
         <h3>${esc(label)}${isToday ? ' <span class="pill">Aujourd\'hui</span>' : ""}</h3>
         ${entries.map((e) => this._dish(e)).join("")}
-        <button class="add" data-a="add" data-day="${key}">＋ Ajouter un plat</button>
+        <div class="add" role="button" data-a="add" data-day="${key}">＋ Ajouter un plat</div>
       </section>`;
   }
 
@@ -342,10 +343,10 @@ class RavitoCard extends HTMLElement {
     const detail = e.stock === "a_acheter" ? e.toBuy.join(", ") : e.stock === "manquera" ? e.beyond.join(", ") : "";
     return `
       <div class="dish">
-        <button class="dish-main" data-a="recipe" data-id="${e.recipeId}">
+        <div class="dish-main" role="button" data-a="recipe" data-id="${e.recipeId}">
           <span class="title">${esc(e.title)}</span>
           <span class="meta">${e.servings ? `${e.servings} pers. · ` : ""}<span title="${esc(label)}">${icon}</span> ${esc(detail || label)}</span>
-        </button>
+        </div>
         <button class="icon" data-a="move" data-id="${e.id}" title="Déplacer">⇄</button>
         <button class="icon ${this._confirm === e.id ? "danger" : ""}" data-a="remove" data-id="${e.id}" title="Retirer">${this._confirm === e.id ? "Retirer ?" : "✕"}</button>
       </div>`;
@@ -375,11 +376,11 @@ class RavitoCard extends HTMLElement {
     return list.map((r) => {
       const status = r.missing.length ? `Manque ${r.missing.length}` : "Faisable";
       return `
-        <button class="recipe" data-a="${action}" data-id="${r.id}">
+        <div class="recipe" role="button" data-a="${action}" data-id="${r.id}">
           ${r.photo ? `<img loading="lazy" src="${esc(this._photo(r.photo))}" alt="">` : '<div class="nophoto">🍽️</div>'}
           <span class="title">${esc(r.title)}</span>
           <span class="meta ${r.missing.length ? "" : "ok"}">${status}${r.menu && r.menu.length ? " · au menu" : ""}</span>
-        </button>`;
+        </div>`;
     }).join("");
   }
 
@@ -461,7 +462,8 @@ const STYLE = `
   .count { margin-left: 8px; font-size: 14px; background: var(--error-color, #db4437); color: #fff; border-radius: 10px; padding: 1px 8px; }
   .busy { margin-left: auto; font-size: 22px; color: var(--secondary-text-color); }
   main { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; touch-action: pan-y; }
-  button { font: inherit; color: inherit; cursor: pointer; }
+  button, [role=button] { font: inherit; color: inherit; cursor: pointer; }
+  .add { text-align: center; box-sizing: border-box; }
   .error { margin: 8px 12px 0; padding: 8px 12px; border-radius: 10px; background: rgba(219,68,55,.15); color: var(--error-color, #db4437); }
   .error button { margin-left: 8px; border: 0; border-radius: 8px; padding: 4px 10px; background: var(--error-color, #db4437); color: #fff; }
   .empty, .hint { color: var(--secondary-text-color); text-align: center; padding: 16px; margin: 0; }
