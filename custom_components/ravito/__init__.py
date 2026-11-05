@@ -24,7 +24,7 @@ PLATFORMS = [Platform.SENSOR, Platform.TODO]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 CARD_URL = "/ravito/ravito-card.js"
 CARD_FILE = Path(__file__).parent / "frontend" / "ravito-card.js"
-VERSION = "0.2.2"
+VERSION = "0.2.3"
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:

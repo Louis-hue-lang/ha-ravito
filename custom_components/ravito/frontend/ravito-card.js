@@ -8,7 +8,8 @@
  *
  * Aucun gestionnaire de toucher ni défilement horizontal : le balayage entre
  * les vues du tableau de bord reste libre. Kiosk Satellite ignore un balayage
- * commencé sur un <button> : les grandes zones tactiles sont des <div role="button">.
+ * commencé sur un <button> : aucune commande n'en est un, toutes sont des
+ * <div role="button">.
  */
 const JOURS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -254,7 +255,7 @@ class RavitoCard extends HTMLElement {
   _render() {
     if (!this._config) return;
     const tab = (key, label, count) =>
-      `<button class="tab ${this._tab === key ? "on" : ""}" data-a="tab" data-tab="${key}">${label}${count ? `<span class="count">${count}</span>` : ""}</button>`;
+      `<div role="button" class="tab ${this._tab === key ? "on" : ""}" data-a="tab" data-tab="${key}">${label}${count ? `<span class="count">${count}</span>` : ""}</div>`;
     const listCount = this._list ? this._list.length : 0;
     this.shadowRoot.innerHTML = `
       <style>${STYLE}</style>
@@ -265,7 +266,7 @@ class RavitoCard extends HTMLElement {
           ${tab("recettes", "📖 Recettes")}
           ${this._busy ? '<span class="busy">…</span>' : ""}
         </header>
-        ${this._error ? `<div class="error">${esc(this._error)} <button data-a="retry">Réessayer</button></div>` : ""}
+        ${this._error ? `<div class="error">${esc(this._error)} <div role="button" data-a="retry">Réessayer</div></div>` : ""}
         <main></main>
         ${this._sheet ? `<div class="sheet"><div class="panel">${this._sheetHtml()}</div></div>` : ""}
       </ha-card>`;
@@ -316,9 +317,9 @@ class RavitoCard extends HTMLElement {
     const range = `${start.getDate()} ${MOIS[start.getMonth()]} – ${end.getDate()} ${MOIS[end.getMonth()]}`;
     return `
       <div class="week">
-        <button class="round" data-a="week" data-step="-1">‹</button>
+        <div role="button" class="round" data-a="week" data-step="-1">‹</div>
         <strong>${this._week === 0 ? "Cette semaine" : range}</strong>
-        <button class="round" data-a="week" data-step="1">›</button>
+        <div role="button" class="round" data-a="week" data-step="1">›</div>
       </div>
       <div class="cols">
         ${days.map((d) => {
@@ -347,8 +348,8 @@ class RavitoCard extends HTMLElement {
           <span class="title">${esc(e.title)}</span>
           <span class="meta">${e.servings ? `${e.servings} pers. · ` : ""}<span title="${esc(label)}">${icon}</span> ${esc(detail || label)}</span>
         </div>
-        <button class="icon" data-a="move" data-id="${e.id}" title="Déplacer">⇄</button>
-        <button class="icon ${this._confirm === e.id ? "danger" : ""}" data-a="remove" data-id="${e.id}" title="Retirer">${this._confirm === e.id ? "Retirer ?" : "✕"}</button>
+        <div role="button" class="icon" data-a="move" data-id="${e.id}" title="Déplacer">⇄</div>
+        <div role="button" class="icon ${this._confirm === e.id ? "danger" : ""}" data-a="remove" data-id="${e.id}" title="Retirer">${this._confirm === e.id ? "Retirer ?" : "✕"}</div>
       </div>`;
   }
 
@@ -366,7 +367,7 @@ class RavitoCard extends HTMLElement {
     const tags = [...new Set(this._recipes.flatMap((r) => r.tags || []))].sort((a, b) => a.localeCompare(b, "fr"));
     return `
       <input class="search" data-input="search" type="search" placeholder="Chercher une recette…" value="${esc(this._search)}">
-      <div class="tags">${tags.map((t) => `<button class="chip ${this._tags.has(t) ? "on" : ""}" data-a="tag" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <div class="tags">${tags.map((t) => `<div role="button" class="chip ${this._tags.has(t) ? "on" : ""}" data-a="tag" data-tag="${esc(t)}">${esc(t)}</div>`).join("")}</div>
       <div class="results grid">${this._recipeRows("recipe")}</div>`;
   }
 
@@ -386,7 +387,7 @@ class RavitoCard extends HTMLElement {
 
   _sheetHtml() {
     const s = this._sheet;
-    const close = '<button class="close" data-a="close">✕</button>';
+    const close = '<div role="button" class="close" data-a="close">✕</div>';
     if (s.kind === "add") {
       const label = s.day ? dayLabel(parseIso(s.day)) : "À placer";
       if (!this._recipes) return `${close}<h2>Ajouter · ${esc(label)}</h2><p class="empty">Chargement…</p>`;
@@ -400,8 +401,8 @@ class RavitoCard extends HTMLElement {
       const days = [...Array(14)].map((_, i) => addDays(start, i));
       return `${close}<h2>${esc(title)}</h2>
         <div class="days">
-          ${days.map((d) => `<button class="chip big" data-a="to-day" data-day="${iso(d)}">${i18nDay(d)}</button>`).join("")}
-          <button class="chip big" data-a="to-day" data-day="">À placer</button>
+          ${days.map((d) => `<div role="button" class="chip big" data-a="to-day" data-day="${iso(d)}">${i18nDay(d)}</div>`).join("")}
+          <div role="button" class="chip big" data-a="to-day" data-day="">À placer</div>
         </div>`;
     }
     if (s.kind === "recipe") {
@@ -422,7 +423,7 @@ class RavitoCard extends HTMLElement {
             <h2>${esc(r.title)}</h2>
             <p class="meta">${[r.servings && `${r.servings} pers.`, times].filter(Boolean).join(" · ")}</p>
             <p class="meta">${(r.tags || []).map(esc).join(" · ")}</p>
-            <button class="primary" data-a="plan">📅 Ajouter au menu</button>
+            <div role="button" class="primary" data-a="plan">📅 Ajouter au menu</div>
           </div>
         </div>
         <div class="recipe-body">
@@ -462,10 +463,10 @@ const STYLE = `
   .count { margin-left: 8px; font-size: 14px; background: var(--error-color, #db4437); color: #fff; border-radius: 10px; padding: 1px 8px; }
   .busy { margin-left: auto; font-size: 22px; color: var(--secondary-text-color); }
   main { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; touch-action: pan-y; }
-  button, [role=button] { font: inherit; color: inherit; cursor: pointer; }
+  [role=button] { font: inherit; color: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
   .add { text-align: center; box-sizing: border-box; }
   .error { margin: 8px 12px 0; padding: 8px 12px; border-radius: 10px; background: rgba(219,68,55,.15); color: var(--error-color, #db4437); }
-  .error button { margin-left: 8px; border: 0; border-radius: 8px; padding: 4px 10px; background: var(--error-color, #db4437); color: #fff; }
+  .error [role=button] { margin-left: 8px; border: 0; border-radius: 8px; padding: 4px 10px; background: var(--error-color, #db4437); color: #fff; }
   .empty, .hint { color: var(--secondary-text-color); text-align: center; padding: 16px; margin: 0; }
   .cols { columns: 2; column-gap: 12px; }
   .box { break-inside: avoid; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--secondary-background-color, rgba(127,127,127,.08)); }
@@ -479,7 +480,7 @@ const STYLE = `
   .round { width: 44px; height: 44px; border-radius: 22px; border: 0; background: var(--secondary-background-color, rgba(127,127,127,.15)); font-size: 22px; }
   .dish { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-top: 1px solid var(--divider-color); }
   .dish:first-of-type { border-top: 0; }
-  .dish-main { flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; display: flex; flex-direction: column; }
+  .dish-main { align-items: flex-start; flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; display: flex; flex-direction: column; }
   .title { font-size: 18px; font-weight: 500; }
   .meta { font-size: 14px; color: var(--secondary-text-color); }
   .meta.ok { color: var(--success-color, #43a047); }
@@ -492,7 +493,7 @@ const STYLE = `
   .chip.on { background: var(--primary-color); border-color: var(--primary-color); color: var(--text-primary-color, #fff); }
   .chip.big { font-size: 18px; padding: 12px 18px; border-radius: 14px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-  .recipe { display: flex; flex-direction: column; text-align: left; border: 0; padding: 0 0 8px; border-radius: 14px; overflow: hidden; background: var(--secondary-background-color, rgba(127,127,127,.08)); }
+  .recipe { align-items: stretch; justify-content: flex-start; display: flex; flex-direction: column; text-align: left; border: 0; padding: 0 0 8px; border-radius: 14px; overflow: hidden; background: var(--secondary-background-color, rgba(127,127,127,.08)); }
   .recipe img, .nophoto { width: 100%; height: 110px; object-fit: cover; display: block; background: rgba(127,127,127,.15); }
   .nophoto { display: flex; align-items: center; justify-content: center; font-size: 36px; }
   .recipe .title, .recipe .meta { padding: 0 10px; }
